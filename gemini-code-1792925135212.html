@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة أجود للتحسين المستمر - محافظة درعا</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Arabic Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        olive: {
+                            50: '#f4f6f4',
+                            100: '#e2e8e2',
+                            200: '#c5d1c5',
+                            300: '#9db19e',
+                            400: '#728d74',
+                            500: '#4e6950',
+                            600: '#3a503c',
+                            700: '#2a3a2d',
+                            800: '#1c281e', // Primary Dark Olive
+                            900: '#121a13',
+                        },
+                        beige: {
+                            50: '#fbf9f5',
+                            100: '#f4efe4', // Primary Soft Beige
+                            200: '#e8dfcd',
+                            300: '#d5c7ab',
+                            400: '#c2a980',
+                            500: '#b8955d', // Royal Accent Gold-Beige
+                            600: '#9a7746',
+                            700: '#7a5b34',
+                            800: '#5a4124',
+                        }
+                    },
+                    fontFamily: {
+                        tajawal: ['Tajawal', 'sans-serif'],
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4efe4;
+            color: #1c281e;
+        }
+        h1, h2, h3, h4, .font-cairo {
+            font-family: 'Cairo', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e8dfcd;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2a3a2d;
+            border-radius: 4px;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .print-certificate {
+                width: 100% !important;
+                border: 8px double #b8955d !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 2rem !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-tajawal bg-beige-100 text-olive-800">
+
+    <!-- Toast Overlay -->
+    <div id="toastContainer" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2 no-print"></div>
+
+    <!-- MAIN HEADER -->
+    <header class="bg-olive-800 text-beige-100 shadow-xl border-b-4 border-beige-500 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-3 min-h-[4.5rem]">
+                
+                <!-- Branding -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-11 h-11 rounded-2xl bg-beige-500 text-olive-800 flex items-center justify-center font-black text-xl shadow-lg border-2 border-beige-100 shrink-0">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-black text-beige-100 flex items-center gap-2">
+                            مبادرة أجود للتحسين المستمر
+                            <span id="portalBadge" class="bg-beige-500 text-olive-800 text-[10px] px-2 py-0.5 rounded-full font-bold">محافظة درعا</span>
+                        </h1>
+                        <p class="text-[10px] text-beige-300 font-medium">منظومة حوكمة وتقييم الأداء والاعتماد الإداري</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Bar for Admin Only (Strictly hidden unless authenticated admin portal) -->
+                <nav id="adminNavTabs" class="hidden items-center space-x-1 space-x-reverse overflow-x-auto custom-scrollbar">
+                    <button onclick="switchAdminTab('dashboard')" id="nav-dashboard" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 bg-olive-700 text-beige-100 shadow whitespace-nowrap">
+                        <i class="fa-solid fa-chart-pie text-beige-400"></i> لوحة القيادة
+                    </button>
+                    <button onclick="switchAdminTab('calculator')" id="nav-calculator" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 hover:bg-olive-700/60 text-beige-300 whitespace-nowrap">
+                        <i class="fa-solid fa-calculator"></i> حاسبة الجدوى
+                    </button>
+                    <button onclick="switchAdminTab('workflow')" id="nav-workflow" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 hover:bg-olive-700/60 text-beige-300 whitespace-nowrap">
+                        <i class="fa-solid fa-route"></i> مسار التنفيذ
+                    </button>
+                    <button onclick="switchAdminTab('before-after')" id="nav-before-after" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 hover:bg-olive-700/60 text-beige-300 whitespace-nowrap">
+                        <i class="fa-solid fa-code-compare"></i> قبل / بعد
+                    </button>
+                    <button onclick="switchAdminTab('proposals')" id="nav-proposals" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 hover:bg-olive-700/60 text-beige-300 whitespace-nowrap">
+                        <i class="fa-solid fa-table-list"></i> السجل الموحد
+                    </button>
+                    <button onclick="switchAdminTab('delivery')" id="nav-delivery" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 hover:bg-olive-700/60 text-beige-300 whitespace-nowrap">
+                        <i class="fa-solid fa-box-archive"></i> التسليم والاعتماد
+                    </button>
+                    <button onclick="switchAdminTab('certificate')" id="nav-certificate" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 hover:bg-olive-700/60 text-beige-300 whitespace-nowrap">
+                        <i class="fa-solid fa-certificate"></i> الشهادة الرسمية
+                    </button>
+                    <button onclick="switchAdminTab('committee')" id="nav-committee" class="nav-btn px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 hover:bg-olive-700/60 text-beige-300 whitespace-nowrap">
+                        <i class="fa-solid fa-users-gear"></i> اللجنة والأمان
+                    </button>
+                </nav>
+
+                <!-- Top Return Button -->
+                <div id="topActionArea" class="no-print">
+                    <button id="returnHomeBtn" onclick="showLandingScreen()" class="hidden bg-beige-500 hover:bg-beige-600 text-olive-800 font-black px-3.5 py-1.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-house"></i> الرئيسية
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
+
+        <!-- ========================================================================= -->
+        <!-- 0. LANDING SCREEN -->
+        <!-- ========================================================================= -->
+        <section id="portal-landing" class="space-y-8 my-auto py-6">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="text-xs font-extrabold text-olive-800 bg-beige-200 px-4 py-1.5 rounded-full border border-beige-300 inline-block">الجمهورية العربية السورية - محافظة درعا</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-olive-800 font-cairo">منظومة أجود للتحسين المستمر</h2>
+                <p class="text-xs sm:text-sm text-slate-600 font-medium">يرجى تحديد بوابة الدخول المخصصة للمتابعة العملياتية:</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                
+                <div onclick="openEmployeePortal()" class="bg-white p-8 rounded-3xl border-2 border-beige-300 shadow-md hover:shadow-xl hover:border-olive-700 transition cursor-pointer space-y-4 text-center group">
+                    <div class="w-16 h-16 rounded-2xl bg-beige-200 text-olive-800 group-hover:bg-olive-700 group-hover:text-beige-100 transition flex items-center justify-center text-2xl mx-auto shadow-sm">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-olive-800">بوابة الموظفين</h3>
+                        <p class="text-xs text-slate-500 mt-1">تقديم مقترحات التحسين ومتابعة حالتها وأسباب القبول أو الرفض لحظياً.</p>
+                    </div>
+                    <span class="inline-block text-xs font-bold bg-beige-100 text-olive-800 px-4 py-2 rounded-xl border border-beige-300 group-hover:bg-olive-700 group-hover:text-beige-100 transition">
+                        الدخول لتقديم ومتابعة مقترح <i class="fa-solid fa-arrow-left mr-1"></i>
+                    </span>
+                </div>
+
+                <div onclick="openAdminPortal()" class="bg-white p-8 rounded-3xl border-2 border-beige-300 shadow-md hover:shadow-xl hover:border-beige-500 transition cursor-pointer space-y-4 text-center group">
+                    <div class="w-16 h-16 rounded-2xl bg-olive-800 text-beige-100 group-hover:bg-beige-500 group-hover:text-olive-800 transition flex items-center justify-center text-2xl mx-auto shadow-sm">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-olive-800">منصة التنمية الإدارية</h3>
+                        <p class="text-xs text-slate-500 mt-1">محمية بررمز أمان خاص (`A1b2C3d4!@`) لكوادر مديرية التنمية الإدارية.</p>
+                    </div>
+                    <span class="inline-block text-xs font-bold bg-olive-800 text-beige-100 px-4 py-2 rounded-xl group-hover:bg-beige-500 group-hover:text-olive-800 transition">
+                        تسجيل الدخول الإداري <i class="fa-solid fa-lock mr-1"></i>
+                    </span>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- 1. EMPLOYEE PORTAL -->
+        <!-- ========================================================================= -->
+        <section id="portal-employee" class="hidden space-y-8">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-beige-300 space-y-6">
+                <div class="border-b border-beige-200 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span class="text-xs font-bold text-olive-700 bg-beige-200 px-3 py-1 rounded-full border border-beige-300 inline-block mb-1">محافظة درعا - كافة المديريات والقطاعات</span>
+                        <h2 class="text-2xl font-black text-olive-800">بوابة الموظفين للتحسين المستمر</h2>
+                        <p class="text-slate-600 text-xs mt-0.5">تقديم مقترحات جديدة أو تتبع حالة المقترحات المقدمة سابقاً ومتابعة أسباب الرفض أو القبول.</p>
+                    </div>
+                    <button onclick="showLandingScreen()" class="bg-beige-100 hover:bg-beige-200 text-olive-800 px-4 py-2 rounded-xl text-xs font-bold border border-beige-300 transition flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-right"></i> العودة للرئيسية
+                    </button>
+                </div>
+
+                <div class="flex gap-2 border-b border-beige-200 pb-3">
+                    <button onclick="switchEmpTab('submit')" id="emp-tab-btn-submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-olive-700 text-beige-100 transition shadow">
+                        <i class="fa-solid fa-plus-circle"></i> تقديم مقترح جديد
+                    </button>
+                    <button onclick="switchEmpTab('track')" id="emp-tab-btn-track" class="px-4 py-2 rounded-xl text-xs font-bold bg-beige-200 text-olive-800 transition">
+                        <i class="fa-solid fa-magnifying-glass"></i> تتبع حالة مقترح (برقم الجوال)
+                    </button>
+                </div>
+
+                <!-- Sub-View 1: Submit Form -->
+                <div id="emp-sub-submit" class="emp-sub-view space-y-6">
+                    <form id="employeeForm" onsubmit="handleEmployeeSubmit(event)" class="space-y-6">
+                        <div class="bg-beige-50 p-5 rounded-2xl border border-beige-200 space-y-4">
+                            <h3 class="font-bold text-olive-800 text-xs flex items-center gap-2 border-b border-beige-200 pb-2">
+                                <i class="fa-solid fa-id-card text-beige-500"></i> بيانات الموظف والجهة مقدمة المقترح:
+                            </h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">اسم الموظف الثلاثي <span class="text-red-500">*</span></label>
+                                    <input type="text" id="emp-name" required placeholder="مثال: المهندسة براءة القيق" class="w-full px-3.5 py-2.5 bg-white border border-beige-300 rounded-xl focus:ring-2 focus:ring-olive-700 text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">الشاغر الوظيفي / المسمى <span class="text-red-500">*</span></label>
+                                    <input type="text" id="emp-role" required placeholder="مثال: مهندسة ذكاء اصطناعي" class="w-full px-3.5 py-2.5 bg-white border border-beige-300 rounded-xl focus:ring-2 focus:ring-olive-700 text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">رقم الجوال / الهاتف <span class="text-red-500">*</span></label>
+                                    <input type="tel" id="emp-phone" required placeholder="09xxxxxxxx" class="w-full px-3.5 py-2.5 bg-white border border-beige-300 rounded-xl focus:ring-2 focus:ring-olive-700 text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">البريد الإلكتروني <span class="text-red-500">*</span></label>
+                                    <input type="email" id="emp-email" required placeholder="example@daraa.gov.sy" class="w-full px-3.5 py-2.5 bg-white border border-beige-300 rounded-xl focus:ring-2 focus:ring-olive-700 text-xs font-bold">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-olive-800 mb-1">المديرية / القطاع التابع له <span class="text-red-500">*</span></label>
+                                <input type="text" id="emp-directorate" required placeholder="مثال: مديرية الصحة / المصالح العقارية / التربية / المالية / النقل..." class="w-full px-3.5 py-2.5 bg-white border border-beige-300 rounded-xl focus:ring-2 focus:ring-olive-700 text-xs font-bold">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-olive-800 mb-1">عنوان المقترح / مبادرة التحسين <span class="text-red-500">*</span></label>
+                                <input type="text" id="emp-title" required placeholder="مثال: أتمتة الدليل الإجرائي للخدمات" class="w-full px-4 py-2.5 bg-beige-50 border border-beige-300 rounded-xl text-xs font-bold">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">الوضع الحالي (تحديات قبل التحسين) <span class="text-red-500">*</span></label>
+                                    <textarea id="emp-current-state" rows="4" required placeholder="شرح المعوقات أو الهدر الزمني..." class="w-full px-4 py-2.5 bg-beige-50 border border-beige-300 rounded-xl text-xs font-medium"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">الوضع المقترح (حل التحسين وتفاصيله) <span class="text-red-500">*</span></label>
+                                    <textarea id="emp-proposed-state" rows="4" required placeholder="شرح آلية وتفاصيل حل التحسين..." class="w-full px-4 py-2.5 bg-beige-50 border border-beige-300 rounded-xl text-xs font-medium"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-beige-50 p-4 rounded-2xl border border-beige-200">
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">التكلفة المادية المتوقعة (ل.س)</label>
+                                    <input type="number" id="emp-cost" min="0" placeholder="مثال: 500000" class="w-full px-3.5 py-2 bg-white border border-beige-300 rounded-xl text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-olive-800 mb-1">الوقت الزمني التقديري للتطبيق (بالأيام) <span class="text-red-500">*</span></label>
+                                    <input type="number" id="emp-time-days" min="1" value="10" required class="w-full px-3.5 py-2 bg-white border border-beige-300 rounded-xl text-xs font-bold text-olive-800">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-beige-200 flex justify-end">
+                            <button type="submit" class="bg-olive-700 hover:bg-olive-800 text-beige-100 font-extrabold px-8 py-3 rounded-xl shadow-lg transition flex items-center gap-2 text-xs">
+                                <i class="fa-solid fa-paper-plane text-beige-400"></i> إرسال المقترح للتنمية الإدارية
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sub-View 2: Track Proposal Status -->
+                <div id="emp-sub-track" class="emp-sub-view hidden space-y-6">
+                    <div class="bg-beige-50 p-6 rounded-2xl border border-beige-300 space-y-4 max-w-xl mx-auto">
+                        <h3 class="font-bold text-olive-800 text-sm text-center">الاستعلام ومتابعة حالة مقترحاتك</h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="track-phone-input" placeholder="أدخل رقم الجوال المقدم بالمقترح..." class="w-full px-4 py-2.5 bg-white border border-beige-300 rounded-xl text-xs font-bold">
+                            <button onclick="trackEmployeeProposals()" class="bg-olive-700 hover:bg-olive-800 text-beige-100 font-bold px-6 py-2.5 rounded-xl text-xs shadow whitespace-nowrap">
+                                استعلام
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="track-results-container" class="space-y-4 max-w-3xl mx-auto"></div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- 2. ADMINISTRATIVE PORTAL -->
+        <!-- ========================================================================= -->
+        <div id="portal-admin" class="hidden space-y-6">
+
+            <!-- Security PIN Auth Box -->
+            <div id="authLockOverlay" class="bg-white rounded-3xl p-8 shadow-xl border-2 border-beige-300 max-w-md mx-auto text-center space-y-5 my-12">
+                <div class="w-16 h-16 rounded-3xl bg-olive-800 text-beige-100 flex items-center justify-center text-2xl mx-auto shadow-md">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-olive-800">حماية منصة التنمية الإدارية</h3>
+                    <p class="text-xs text-slate-600 mt-1">رمز الدخول الافتراضي: <code class="bg-beige-200 px-2 py-0.5 rounded font-mono text-olive-900 font-bold">A1b2C3d4!@</code></p>
+                </div>
+                <div class="space-y-3">
+                    <input type="password" id="authPinInput" placeholder="أدخل رمز الدخول..." class="w-full text-center px-4 py-3 bg-beige-50 border border-beige-300 rounded-xl focus:ring-2 focus:ring-olive-700 font-bold text-sm tracking-widest">
+                    <div class="flex gap-2">
+                        <button onclick="showLandingScreen()" class="w-1/3 py-2.5 bg-beige-200 hover:bg-beige-300 text-olive-800 font-bold rounded-xl text-xs">إلغاء</button>
+                        <button onclick="verifySecretPin()" class="w-2/3 py-2.5 bg-olive-700 hover:bg-olive-800 text-beige-100 font-extrabold rounded-xl shadow transition text-xs">تأكيد الدخول</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Body (Visible after Login) -->
+            <div id="adminMainContent" class="hidden space-y-6">
+
+                <!-- SECTION A: DASHBOARD -->
+                <section id="tab-dashboard" class="tab-content space-y-6">
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-beige-300 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div>
+                            <span class="text-xs font-bold text-olive-800 bg-beige-200 px-3 py-1 rounded-full border border-beige-300 inline-block mb-1">لوحة القيادة الموحدة</span>
+                            <h2 class="text-2xl font-black text-olive-800">مؤشرات أداء المقترحات الميدانية</h2>
+                            <p class="text-slate-600 text-xs">متابعة إحصائية فورية لكافة المبادرات المرفوعة من مختلف المديريات.</p>
+                        </div>
+                        <button onclick="window.print()" class="bg-beige-200 hover:bg-beige-300 text-olive-800 px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 text-xs">
+                            <i class="fa-solid fa-print"></i> طباعة التقرير
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-beige-300 border-r-4 border-r-olive-700 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-beige-100 text-olive-800 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">إجمالي المقترحات</span>
+                                <h3 id="stat-total" class="text-2xl font-black text-olive-800">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-beige-300 border-r-4 border-r-amber-500 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">قيد الدراسة والتنفيذ</span>
+                                <h3 id="stat-pending" class="text-2xl font-black text-amber-600">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-beige-300 border-r-4 border-r-emerald-600 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">المكتملة والمسلمة</span>
+                                <h3 id="stat-completed" class="text-2xl font-black text-emerald-600">0</h3>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-beige-300 border-r-4 border-r-rose-600 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">المقترحات المرفوضة</span>
+                                <h3 id="stat-rejected" class="text-2xl font-black text-rose-600">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-beige-300">
+                            <h3 class="font-bold text-olive-800 text-sm mb-4">توزيع المقترحات حسب المديرية والقطاع</h3>
+                            <div class="h-64 relative"><canvas id="directorateChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-beige-300">
+                            <h3 class="font-bold text-olive-800 text-sm mb-4">الأزمنة التقديرية والتنفيذية للمقترحات</h3>
+                            <div class="h-64 relative"><canvas id="timeAnalyticsChart"></canvas></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION B: FEASIBILITY CALCULATOR -->
+                <section id="tab-calculator" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-beige-300 space-y-6">
+                        <div class="border-b border-beige-200 pb-4">
+                            <h3 class="text-xl font-black text-olive-800">حاسبة الجدوى وتقييم المقترحات</h3>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-olive-800 mb-1">اختر المقترح للتقييم <span class="text-red-500">*</span></label>
+                            <select id="calc-proposal-select" onchange="runFeasibilityCalculation()" class="w-full px-4 py-2.5 bg-beige-50 border border-beige-300 rounded-xl text-xs font-bold text-olive-800"></select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">الوفر الزمني المتوقع</label>
+                                <select id="calc-savings" onchange="runFeasibilityCalculation()" class="w-full p-2.5 bg-white border border-beige-300 rounded-xl text-xs font-bold">
+                                    <option value="35">وفر مرتفع جداً (&gt; 50%)</option>
+                                    <option value="25" selected>وفر متوسط (25-50%)</option>
+                                    <option value="15">وفر محدود (&lt; 25%)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">نطاق الأثر المستهدف</label>
+                                <select id="calc-impact" onchange="runFeasibilityCalculation()" class="w-full p-2.5 bg-white border border-beige-300 rounded-xl text-xs font-bold">
+                                    <option value="35">شامل للمديريات والخدمات</option>
+                                    <option value="25" selected>قسم أو إدارة محددة</option>
+                                    <option value="15">نطاق إداري ضيق</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">التعقيد المالي واللوجستي</label>
+                                <select id="calc-cost" onchange="runFeasibilityCalculation()" class="w-full p-2.5 bg-white border border-beige-300 rounded-xl text-xs font-bold">
+                                    <option value="10" selected>منخفض جداً (موارد متاحة)</option>
+                                    <option value="20">متوسط (تجهيزات بسيطة)</option>
+                                    <option value="30">مرتفع (تجهيزات معقدة)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">الاستدامة والجاهزية</label>
+                                <select id="calc-sustain" onchange="runFeasibilityCalculation()" class="w-full p-2.5 bg-white border border-beige-300 rounded-xl text-xs font-bold">
+                                    <option value="20" selected>مستدام دائم</option>
+                                    <option value="10">حل مرحلي مؤقت</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bg-olive-800 text-beige-100 p-5 rounded-2xl flex items-center justify-between border-2 border-beige-500 shadow-md">
+                            <div>
+                                <span class="text-[11px] text-beige-300 font-bold block">نتيجة حاسبة الجدوى المحسوبة:</span>
+                                <p id="calc-badge-text" class="text-xs font-bold text-emerald-300 mt-0.5">ممتاز - أولوية تنفيذ مرتفعة وسريعة</p>
+                            </div>
+                            <div id="calc-score-val" class="text-3xl font-black text-beige-400 bg-olive-900 px-5 py-1.5 rounded-xl border border-beige-500/50">85%</div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button onclick="saveFeasibilityScoreToProposal()" class="bg-olive-700 hover:bg-olive-800 text-beige-100 px-6 py-2.5 rounded-xl text-xs font-extrabold transition shadow flex items-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i> حفظ درجة الجدوى للمقترح
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION C: WORKFLOW MAP -->
+                <section id="tab-workflow" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-beige-300 space-y-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-beige-200 pb-3">
+                            <h3 class="text-xl font-black text-olive-800">خريطة ومسار التنفيذ للمقترحات</h3>
+                            <button onclick="openAddStageModal()" class="bg-olive-700 hover:bg-olive-800 text-beige-100 text-xs font-bold px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus-circle"></i> إضافة مرحلة تنفيذ مرتبة
+                            </button>
+                        </div>
+                        <div id="workflow-cards-container" class="space-y-6"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION D: BEFORE / AFTER -->
+                <section id="tab-before-after" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-beige-300">
+                        <h3 class="text-xl font-black text-olive-800 mb-1">تقييم قبل / بعد التحسين</h3>
+                        <p class="text-xs text-slate-600 mb-4">عرض الوضع الحالي التلقائي، مع التعديل اليدوي المباشر لقيم نتائج التحسين.</p>
+                        <div id="before-after-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION E: UNIFIED PROPOSALS LOG -->
+                <section id="tab-proposals" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-beige-300 flex flex-col md:flex-row gap-4 items-center justify-between no-print">
+                        <div class="flex flex-wrap gap-3 w-full md:w-auto">
+                            <input type="text" id="search-input" onkeyup="filterProposalsTable()" placeholder="بحث بالعنوان، الموظف، أو المديرية..." class="px-4 py-2 bg-beige-50 border border-beige-300 rounded-xl text-xs focus:outline-none w-full md:w-80 font-medium">
+                            <select id="filter-status" onchange="filterProposalsTable()" class="px-3 py-2 bg-beige-50 border border-beige-300 rounded-xl text-xs font-bold">
+                                <option value="ALL">جميع الحالات</option>
+                                <option value="قيد الدراسة">قيد الدراسة</option>
+                                <option value="معتمد">معتمد</option>
+                                <option value="قيد التنفيذ">قيد التنفيذ</option>
+                                <option value="مكتمل ومسلم">مكتمل ومسلم</option>
+                                <option value="مرفوض">مرفوض</option>
+                            </select>
+                        </div>
+                        <button onclick="exportToCSV()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i> تصدير البيانات CSV
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-3xl shadow-sm border border-beige-300 overflow-hidden">
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-right border-collapse">
+                                <thead>
+                                    <tr class="bg-olive-800 text-beige-100 text-xs font-bold">
+                                        <th class="p-4 border-b border-olive-700">#</th>
+                                        <th class="p-4 border-b border-olive-700">عنوان المقترح والمديرية</th>
+                                        <th class="p-4 border-b border-olive-700">بيانات الموظف المقدم</th>
+                                        <th class="p-4 border-b border-olive-700 text-center">المدة والتكلفة</th>
+                                        <th class="p-4 border-b border-olive-700 text-center">الجدوى</th>
+                                        <th class="p-4 border-b border-olive-700 text-center">اللجنة المشرفة</th>
+                                        <th class="p-4 border-b border-olive-700 text-center">الحالة التنفيذية</th>
+                                        <th class="p-4 border-b border-olive-700 text-center no-print">إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proposals-tbody" class="divide-y divide-beige-200 text-xs"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION F: FINAL DELIVERY & DELTA MATRICES WITH CUSTOM KPIS -->
+                <section id="tab-delivery" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-beige-300 space-y-6">
+                        <div class="border-b border-beige-200 pb-4">
+                            <h3 class="text-xl font-black text-olive-800">التسليم النهائي ومصفوفات الاعتماد الرقمية (Delta Metrics)</h3>
+                            <p class="text-xs text-slate-600 mt-0.5">مقارنة الدراسة التقديرية بالقياسات الفعلية، إضافة مؤشرات قياس جديدة مخصصة، وتدوين مبررات القرار.</p>
+                        </div>
+
+                        <div id="delivery-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION G: OFFICIAL CERTIFICATE -->
+                <section id="tab-certificate" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-beige-300 flex flex-col sm:flex-row justify-between items-center gap-4 no-print">
+                        <div>
+                            <h3 class="font-bold text-olive-800 text-sm">إصدار الشهادة الرسمية للتحسين</h3>
+                            <p class="text-xs text-slate-500">متاحة فقط للمشاريع المكتملة والمسلمة والمثبت لها لجنة إشراف.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <select id="cert-proposal-select" onchange="renderCertificateView()" class="px-3 py-2 bg-beige-50 border border-beige-300 rounded-xl text-xs font-bold"></select>
+                            <button onclick="window.print()" class="bg-beige-500 hover:bg-beige-600 text-olive-800 font-extrabold px-5 py-2 rounded-xl text-xs shadow transition flex items-center gap-2">
+                                <i class="fa-solid fa-print"></i> طباعة الشهادة
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="certificate-print-area" class="bg-white p-8 sm:p-14 rounded-3xl shadow-xl border-8 border-double border-beige-500 relative overflow-hidden max-w-4xl mx-auto print-certificate">
+                        <div class="absolute top-4 right-4 text-beige-500 text-3xl opacity-40"><i class="fa-solid fa-leaf"></i></div>
+                        <div class="absolute top-4 left-4 text-beige-500 text-3xl opacity-40"><i class="fa-solid fa-leaf"></i></div>
+                        <div class="absolute bottom-4 right-4 text-beige-500 text-3xl opacity-40"><i class="fa-solid fa-leaf"></i></div>
+                        <div class="absolute bottom-4 left-4 text-beige-500 text-3xl opacity-40"><i class="fa-solid fa-leaf"></i></div>
+
+                        <div class="text-center space-y-6 relative z-10">
+                            <div class="space-y-2 border-b-2 border-beige-300 pb-6">
+                                <h4 class="text-xs sm:text-sm font-bold text-slate-700">الجمهورية العربية السورية - محافظة درعا</h4>
+                                <h2 class="text-2xl sm:text-3xl font-black text-olive-800 font-cairo">مديرية التنمية الإدارية</h2>
+                                <span class="inline-block bg-beige-500 text-olive-800 font-black text-xs px-4 py-1 rounded-full shadow-sm">مبادرة أجود للتحسين المستمر</span>
+                            </div>
+
+                            <div class="py-4 space-y-4">
+                                <h3 class="text-2xl sm:text-3xl font-black text-beige-600 tracking-wide font-cairo">شــــــهادة شـــــكـر وتــقــديـــــر</h3>
+                                <p class="text-xs sm:text-sm text-slate-600 font-medium">تعرب محافظة درعا ومديرية التنمية الإدارية عن أسمى آيات الشكر والتقدير والاعتزاز إلى:</p>
+                                <div id="cert-recipient-name" class="text-xl sm:text-2xl font-black text-olive-800 py-1.5 border-b-2 border-dashed border-beige-400 inline-block px-8">---</div>
+                                <p id="cert-recipient-role" class="text-xs text-slate-500 font-bold block">---</p>
+                                <p class="text-xs sm:text-sm text-slate-700 leading-relaxed max-w-2xl mx-auto pt-2 font-medium">
+                                    تقديراً لجهوده المتميزة وإسهامه الفعال في تقديم وتطبيق مقترح التحسين المستمر المبتكر بعنوان:
+                                    <br><strong id="cert-proposal-title" class="text-olive-800 text-base underline font-black block mt-2">"---"</strong>
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-8 pt-10 border-t-2 border-beige-300 text-xs font-bold text-slate-800 mt-6">
+                                <div class="space-y-1 text-center">
+                                    <p class="text-slate-500 font-semibold">محافظ درعا</p>
+                                    <p class="text-olive-800 font-black text-sm sm:text-base">السيد المحافظ أنور الزعبي</p>
+                                </div>
+                                <div class="space-y-1 text-center">
+                                    <p class="text-slate-500 font-semibold">مدير مديرية التنمية الإدارية</p>
+                                    <p class="text-olive-800 font-black text-sm sm:text-base">الأستاذ حسين نصيرات</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION H: COMMITTEE & SECURITY PIN -->
+                <section id="tab-committee" class="tab-content hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-beige-300 space-y-4">
+                            <div class="flex justify-between items-center border-b border-beige-200 pb-3">
+                                <h3 class="font-bold text-olive-800 text-base">أعضاء لجنة التقييم والإشراف</h3>
+                                <button onclick="openAddMemberModal()" class="bg-olive-700 hover:bg-olive-800 text-beige-100 font-bold px-4 py-2 rounded-xl text-xs transition shadow">+ إضافة عضو للجنة</button>
+                            </div>
+                            <div id="committee-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-beige-300 space-y-4">
+                            <h3 class="font-bold text-olive-800 text-base border-b border-beige-200 pb-3">تغيير رمز دخول التنمية الإدارية</h3>
+                            <form onsubmit="handlePinChange(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">رمز الدخول الحالي</label>
+                                    <input type="password" id="pin-old" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">الرمز الجديد (10 رموز على الأقل: أحرف، أرقام، رموز)</label>
+                                    <input type="password" id="pin-new" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl text-xs font-bold">
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-olive-700 hover:bg-olive-800 text-beige-100 font-bold rounded-xl text-xs transition shadow">حفظ الرمز الجديد</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODALS -->
+    <div id="assignCommitteeModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden no-print p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border-t-4 border-beige-500">
+            <button onclick="toggleModal('assignCommitteeModal', false)" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-base font-black text-olive-800">تعيين وإسناد لجنة الإشراف للمقترح</h3>
+            <div id="assignModalContent" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="addStageModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden no-print p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border-t-4 border-beige-500">
+            <button onclick="toggleModal('addStageModal', false)" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-base font-black text-olive-800">إضافة مرحلة تنفيذ جديدة للمقترح</h3>
+            <form onsubmit="handleStageSubmit(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">اختر المقترح</label>
+                    <select id="stage-prop-id" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold"></select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">رقم ترتيب المرحلة (مثال: 1، 2...)</label>
+                    <input type="number" id="stage-order" min="1" value="1" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">عنوان المرحلة الإجرائية</label>
+                    <input type="text" id="stage-title" placeholder="مثال: التدقيق والمطابقة" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الجهة المسؤولة عن التنفيذ</label>
+                    <input type="text" id="stage-dept" placeholder="مثال: دائرة المعلوماتية" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="toggleModal('addStageModal', false)" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-olive-700 text-beige-100 font-bold rounded-xl shadow">حفظ المرحلة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Custom KPI Metric -->
+    <div id="addMetricModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden no-print p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border-t-4 border-beige-500">
+            <button onclick="toggleModal('addMetricModal', false)" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-base font-black text-olive-800">إضافة مؤشر قياس جديد (KPI)</h3>
+            <form onsubmit="handleCustomMetricSubmit(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="metric-prop-id">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">اسم المؤشر الجديد</label>
+                    <input type="text" id="metric-label" placeholder="مثال: مؤشر كفاءة التشغيل الرقمي" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">قيمة المؤشر / النتيجة</label>
+                    <input type="text" id="metric-value" placeholder="مثال: 94% أو 5 أيام وفر" required class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="toggleModal('addMetricModal', false)" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-olive-700 text-beige-100 font-bold rounded-xl shadow">إضافة المؤشر</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="empProfileModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden no-print p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border-t-4 border-beige-500">
+            <button onclick="toggleModal('empProfileModal', false)" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-base font-black text-olive-800 border-b border-beige-200 pb-2">بطاقة بيانات الموظف المقدم للمقترح</h3>
+            <div id="empProfileModalContent" class="space-y-3 text-xs"></div>
+        </div>
+    </div>
+
+    <div id="addMemberModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden no-print p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative border-t-4 border-beige-500">
+            <button onclick="toggleModal('addMemberModal', false)" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-base font-black text-olive-800">إضافة عضو جديد للجنة</h3>
+            <form onsubmit="handleMemberSubmit(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">اسم العضو</label>
+                    <input type="text" id="mem-name" required placeholder="مثال: المهندسة براءة القيق" class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">الصفة والتخصص</label>
+                    <input type="text" id="mem-role" required placeholder="مثال: مسئول التقييم" class="w-full p-2.5 bg-beige-50 border border-beige-300 rounded-xl font-bold">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="toggleModal('addMemberModal', false)" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-olive-700 text-beige-100 font-bold rounded-xl shadow">حفظ العضو</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-olive-800 text-beige-300 text-xs py-5 border-t-2 border-beige-500 mt-auto no-print">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-1">
+            <p class="font-extrabold text-beige-100 text-xs sm:text-sm">مبادرة أجود للتحسين المستمر - مديرية التنمية الإدارية بمحافظة درعا</p>
+            <p class="text-beige-400 text-[10px]">منظومة القياس والتقييم والاعتماد المباشر © 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        const defaultProposals = [
+            {
+                id: 101,
+                title: "تطوير دليل المساطر الإدارية وأتمتة تقييم الأداء",
+                empName: "المهندسة براءة القيق",
+                empRole: "مهندسة ذكاء اصطناعي وحاسوب",
+                empPhone: "0991234567",
+                empEmail: "baraa@daraa.gov.sy",
+                directorate: "مديرية التنمية الإدارية",
+                currentState: "بطء في مراجعة المعاملات واعتماد النظام الورقي",
+                proposedState: "نماذج رقمية موحدة وتفعيل دليل المساطر السريع",
+                expectedCost: 850000,
+                expectedTimeDays: 15,
+                status: "مكتمل ومسلم",
+                feasibilityScore: 92,
+                committee: ["المهندسة براءة القيق", "الأستاذ حسين نصيرات"],
+                adminReason: "تم اعتماد المقترح وإنجازه بنجاح لتخفيض الهدر الزمني بنسبة 70%.",
+                deltaDays: 12,
+                deltaCost: 800000,
+                citizenSatisfaction: 96,
+                employeeSatisfaction: 94,
+                afterMetricsText: "تخفيض الوقت بنسبة 70% وتحقيق نسبة رضا 96%",
+                stages: [
+                    { order: 1, title: "توثيق وتوصيف المعاملات الحالي", dept: "فريق التنمية الإدارية" },
+                    { order: 2, title: "بناء المخطط الإجرائي الرقمي BPMN", dept: "دائرة المعلوماتية" }
+                ],
+                customMetrics: [
+                    { label: "مؤشر الكفاءة الرقمية", value: "98%" }
+                ]
+            }
+        ];
+
+        const defaultCommittee = [
+            { id: 1, name: "المهندسة براءة القيق", role: "مسؤول التحسين المستمر والجودة" },
+            { id: 2, name: "الأستاذ حسين نصيرات", role: "مدير مديرية التنمية الإدارية" }
+        ];
+
+        let proposals = JSON.parse(localStorage.getItem('ajwad_v7_proposals')) || defaultProposals;
+        let committee = JSON.parse(localStorage.getItem('ajwad_v7_committee')) || defaultCommittee;
+        let currentPin = localStorage.getItem('ajwad_v7_pin') || "A1b2C3d4!@";
+        let isAdminAuthenticated = false;
+
+        let chartInst1 = null;
+        let chartInst2 = null;
+
+        const broadcast = new BroadcastChannel('ajwad_live_channel');
+        broadcast.onmessage = function(event) {
+            if (event.data && event.data.type === 'NEW_PROPOSAL') {
+                proposals = JSON.parse(localStorage.getItem('ajwad_v7_proposals')) || proposals;
+                showToast(`وصل مقترح جديد فوراً: "${event.data.title}"`);
+                if (isAdminAuthenticated) refreshAllAdminViews();
+            }
+        };
+
+        function showToast(msg, isSuccess = true) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `${isSuccess ? 'bg-olive-800 border-beige-500' : 'bg-rose-800 border-rose-400'} text-beige-100 border px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 text-xs font-bold transition-all duration-300`;
+            toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check text-beige-400' : 'fa-circle-exclamation text-rose-300'}"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        function saveData() {
+            localStorage.setItem('ajwad_v7_proposals', JSON.stringify(proposals));
+            localStorage.setItem('ajwad_v7_committee', JSON.stringify(committee));
+            localStorage.setItem('ajwad_v7_pin', currentPin);
+        }
+
+        function showLandingScreen() {
+            document.getElementById('portal-landing').classList.remove('hidden');
+            document.getElementById('portal-employee').classList.add('hidden');
+            document.getElementById('portal-admin').classList.add('hidden');
+            document.getElementById('adminNavTabs').classList.add('hidden');
+            document.getElementById('adminNavTabs').classList.remove('flex');
+            document.getElementById('returnHomeBtn').classList.add('hidden');
+            document.getElementById('portalBadge').innerText = "محافظة درعا";
+            isAdminAuthenticated = false;
+        }
+
+        function openEmployeePortal() {
+            document.getElementById('portal-landing').classList.add('hidden');
+            document.getElementById('portal-admin').classList.add('hidden');
+            document.getElementById('portal-employee').classList.remove('hidden');
+            document.getElementById('adminNavTabs').classList.add('hidden');
+            document.getElementById('adminNavTabs').classList.remove('flex');
+            document.getElementById('returnHomeBtn').classList.remove('hidden');
+            document.getElementById('portalBadge').innerText = "بوابة الموظفين";
+            switchEmpTab('submit');
+            isAdminAuthenticated = false;
+        }
+
+        function switchEmpTab(tab) {
+            document.querySelectorAll('.emp-sub-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`emp-sub-${tab}`).classList.remove('hidden');
+
+            const btnSubmit = document.getElementById('emp-tab-btn-submit');
+            const btnTrack = document.getElementById('emp-tab-btn-track');
+
+            if (tab === 'submit') {
+                btnSubmit.className = "px-4 py-2 rounded-xl text-xs font-bold bg-olive-700 text-beige-100 transition shadow";
+                btnTrack.className = "px-4 py-2 rounded-xl text-xs font-bold bg-beige-200 text-olive-800 transition";
+            } else {
+                btnTrack.className = "px-4 py-2 rounded-xl text-xs font-bold bg-olive-700 text-beige-100 transition shadow";
+                btnSubmit.className = "px-4 py-2 rounded-xl text-xs font-bold bg-beige-200 text-olive-800 transition";
+            }
+        }
+
+        function trackEmployeeProposals() {
+            const phone = document.getElementById('track-phone-input').value.trim();
+            const container = document.getElementById('track-results-container');
+            container.innerHTML = '';
+
+            if (!phone) {
+                showToast("يرجى إدخال رقم الجوال للاستعلام", false);
+                return;
+            }
+
+            const matched = proposals.filter(p => p.empPhone === phone);
+            if (matched.length === 0) {
+                container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-slate-500 font-bold border border-beige-300">لا توجد مقترحات مسجلة برقم الجوال هذا.</div>`;
+                return;
+            }
+
+            matched.forEach(p => {
+                let statusColor = "bg-amber-100 text-amber-800 border-amber-300";
+                if (p.status === 'معتمد' || p.status === 'قيد التنفيذ') statusColor = "bg-blue-100 text-blue-800 border-blue-300";
+                if (p.status === 'مكتمل ومسلم') statusColor = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                if (p.status === 'مرفوض') statusColor = "bg-rose-100 text-rose-800 border-rose-300";
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-2xl border border-beige-300 shadow-sm space-y-3";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 border-b border-beige-200 pb-2">
+                        <div>
+                            <span class="text-[10px] font-bold text-olive-800 bg-beige-200 px-2 py-0.5 rounded-full">${p.directorate}</span>
+                            <h4 class="font-extrabold text-olive-800 text-sm mt-1">${p.title}</h4>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold border ${statusColor}">${p.status}</span>
+                    </div>
+                    <div class="text-xs space-y-1">
+                        <p><strong>الوضع المقترح:</strong> ${p.proposedState}</p>
+                        <p><strong>التكلفة المقدرة:</strong> ${p.expectedCost ? p.expectedCost.toLocaleString() + ' ل.س' : 'غير محدودة'}</p>
+                        <p><strong>المدة الزمنية:</strong> ${p.expectedTimeDays} أيام</p>
+                    </div>
+                    <div class="bg-beige-50 p-3 rounded-xl border border-beige-200 text-xs space-y-1">
+                        <strong class="text-olive-900 block"><i class="fa-solid fa-comment-dots"></i> رد وملاحظات مديرية التنمية الإدارية (أسباب القبول أو الرفض):</strong>
+                        <p class="text-slate-700 font-medium">${p.adminReason || 'المقترح قيد الدراسة والتدقيق الفني والإداري من قبل اللجان المختصة.'}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openAdminPortal() {
+            document.getElementById('portal-landing').classList.add('hidden');
+            document.getElementById('portal-employee').classList.add('hidden');
+            document.getElementById('portal-admin').classList.remove('hidden');
+            document.getElementById('returnHomeBtn').classList.remove('hidden');
+            document.getElementById('portalBadge').innerText = "التنمية الإدارية";
+
+            if (!isAdminAuthenticated) {
+                document.getElementById('authLockOverlay').classList.remove('hidden');
+                document.getElementById('adminMainContent').classList.add('hidden');
+                document.getElementById('adminNavTabs').classList.add('hidden');
+                document.getElementById('adminNavTabs').classList.remove('flex');
+            } else {
+                document.getElementById('authLockOverlay').classList.add('hidden');
+                document.getElementById('adminMainContent').classList.remove('hidden');
+                document.getElementById('adminNavTabs').classList.remove('hidden');
+                document.getElementById('adminNavTabs').classList.add('flex');
+                refreshAllAdminViews();
+            }
+        }
+
+        function verifySecretPin() {
+            const input = document.getElementById('authPinInput').value;
+            if (input === currentPin) {
+                isAdminAuthenticated = true;
+                document.getElementById('authLockOverlay').classList.add('hidden');
+                document.getElementById('adminMainContent').classList.remove('hidden');
+                document.getElementById('adminNavTabs').classList.remove('hidden');
+                document.getElementById('adminNavTabs').classList.add('flex');
+                showToast("تم التحقق بنجاح! مرحباً بك في منصة التنمية الإدارية");
+                refreshAllAdminViews();
+            } else {
+                showToast("رمز الدخول غير صحيح!", false);
+            }
+        }
+
+        function handleEmployeeSubmit(e) {
+            e.preventDefault();
+            const newProp = {
+                id: Date.now(),
+                empName: document.getElementById('emp-name').value,
+                empRole: document.getElementById('emp-role').value,
+                empPhone: document.getElementById('emp-phone').value,
+                empEmail: document.getElementById('emp-email').value,
+                directorate: document.getElementById('emp-directorate').value,
+                title: document.getElementById('emp-title').value,
+                currentState: document.getElementById('emp-current-state').value,
+                proposedState: document.getElementById('emp-proposed-state').value,
+                expectedCost: parseInt(document.getElementById('emp-cost').value) || 0,
+                expectedTimeDays: parseInt(document.getElementById('emp-time-days').value) || 10,
+                status: "قيد الدراسة",
+                feasibilityScore: 75,
+                committee: [],
+                adminReason: "تم استلام المقترح بنجاح وهو قيد الدراسة والتقييم من اللجان.",
+                deltaDays: 0,
+                deltaCost: 0,
+                citizenSatisfaction: 0,
+                employeeSatisfaction: 0,
+                afterMetricsText: "قيد التطبيق الميداني",
+                stages: [],
+                customMetrics: []
+            };
+
+            proposals.unshift(newProp);
+            saveData();
+            broadcast.postMessage({ type: 'NEW_PROPOSAL', title: newProp.title });
+
+            document.getElementById('employeeForm').reset();
+            showToast("تم إرسال المقترح بنجاح ووصول للإدارة!");
+            switchEmpTab('track');
+            document.getElementById('track-phone-input').value = newProp.empPhone;
+            trackEmployeeProposals();
+        }
+
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-olive-700', 'text-beige-100', 'shadow');
+                btn.classList.add('hover:bg-olive-700/60', 'text-beige-300');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-olive-700', 'text-beige-100', 'shadow');
+                activeNav.classList.remove('hover:bg-olive-700/60', 'text-beige-300');
+            }
+
+            if (tabId === 'dashboard') renderCharts();
+            if (tabId === 'calculator') populateCalculatorSelect();
+            if (tabId === 'workflow') renderWorkflowView();
+            if (tabId === 'before-after') renderBeforeAfterView();
+            if (tabId === 'proposals') renderProposalsTable();
+            if (tabId === 'delivery') renderDeliveryView();
+            if (tabId === 'certificate') {
+                populateCertificateSelect();
+                renderCertificateView();
+            }
+            if (tabId === 'committee') renderCommitteeView();
+        }
+
+        function renderProposalsTable(data = proposals) {
+            const tbody = document.getElementById('proposals-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400 font-bold">لا توجد مقترحات مسجلة</td></tr>`;
+                return;
+            }
+
+            data.forEach((p, idx) => {
+                const hasCommittee = p.committee && p.committee.length > 0;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-beige-50/60 transition border-b border-beige-200";
+
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-400">${idx + 1}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-olive-800">${p.title}</div>
+                        <span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded bg-beige-200 text-olive-800 font-bold">${p.directorate}</span>
+                    </td>
+                    <td class="p-4">
+                        <button onclick="openEmpProfileModal(${p.id})" class="text-xs font-bold text-olive-700 hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-user-tie"></i> ${p.empName}
+                        </button>
+                        <p class="text-[10px] text-slate-500">${p.empRole}</p>
+                    </td>
+                    <td class="p-4 text-center">
+                        <div class="font-bold text-olive-800">${p.expectedTimeDays} أيام</div>
+                        <div class="text-[10px] text-slate-500">${p.expectedCost ? p.expectedCost.toLocaleString() + ' ل.س' : 'مجاني'}</div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-black bg-beige-300 text-olive-800">${p.feasibilityScore}%</span>
+                    </td>
+                    <td class="p-4 text-center">
+                        ${hasCommittee ? 
+                            `<button onclick="openAssignCommitteeModal(${p.id})" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-xl border border-emerald-300"><i class="fa-solid fa-check-double"></i> ${p.committee.length} عضو</button>` :
+                            `<button onclick="openAssignCommitteeModal(${p.id})" class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2.5 py-1 rounded-xl border border-rose-300 animate-pulse"><i class="fa-solid fa-triangle-exclamation"></i> مطلوب تعيين لجنة</button>`
+                        }
+                    </td>
+                    <td class="p-4 text-center">
+                        <select onchange="updateStatus(${p.id}, this.value)" class="px-2 py-1 rounded-lg text-xs font-bold border border-beige-300 focus:outline-none">
+                            <option value="قيد الدراسة" ${p.status === 'قيد الدراسة' ? 'selected' : ''}>قيد الدراسة</option>
+                            <option value="معتمد" ${p.status === 'معتمد' ? 'selected' : ''}>معتمد</option>
+                            <option value="قيد التنفيذ" ${p.status === 'قيد التنفيذ' ? 'selected' : ''}>قيد التنفيذ</option>
+                            <option value="مكتمل ومسلم" ${p.status === 'مكتمل ومسلم' ? 'selected' : ''}>مكتمل ومسلم</option>
+                            <option value="مرفوض" ${p.status === 'مرفوض' ? 'selected' : ''}>مرفوض</option>
+                        </select>
+                    </td>
+                    <td class="p-4 text-center no-print">
+                        <button onclick="deleteProposal(${p.id})" class="text-rose-600 hover:text-rose-800 p-1.5 rounded-lg hover:bg-rose-50 transition"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStatus(id, newStatus) {
+            const p = proposals.find(item => item.id === id);
+            if (p) {
+                p.status = newStatus;
+                saveData();
+                refreshAllAdminViews();
+                showToast(`تم تغيير الحالة إلى (${newStatus})`);
+            }
+        }
+
+        function filterProposalsTable() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            const status = document.getElementById('filter-status').value;
+            const filtered = proposals.filter(p => {
+                const matchQ = p.title.toLowerCase().includes(q) || p.empName.toLowerCase().includes(q) || p.directorate.toLowerCase().includes(q);
+                const matchStatus = status === 'ALL' || p.status === status;
+                return matchQ && matchStatus;
+            });
+            renderProposalsTable(filtered);
+        }
+
+        function deleteProposal(id) {
+            if (confirm("هل تريد حذف هذا المقترح نهائياً؟")) {
+                proposals = proposals.filter(p => p.id !== id);
+                saveData();
+                refreshAllAdminViews();
+                showToast("تم الحذف بنجاح");
+            }
+        }
+
+        function populateCalculatorSelect() {
+            const select = document.getElementById('calc-proposal-select');
+            if (!select) return;
+            select.innerHTML = '';
+            proposals.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.title} (${p.empName})`;
+                select.appendChild(opt);
+            });
+            runFeasibilityCalculation();
+        }
+
+        function runFeasibilityCalculation() {
+            const savings = parseInt(document.getElementById('calc-savings')?.value) || 25;
+            const impact = parseInt(document.getElementById('calc-impact')?.value) || 25;
+            const cost = parseInt(document.getElementById('calc-cost')?.value) || 10;
+            const sustain = parseInt(document.getElementById('calc-sustain')?.value) || 20;
+
+            let score = savings + impact + sustain + (30 - cost);
+            score = Math.min(99, Math.max(30, Math.round(score)));
+
+            document.getElementById('calc-score-val').innerText = `${score}%`;
+        }
+
+        function saveFeasibilityScoreToProposal() {
+            const select = document.getElementById('calc-proposal-select');
+            const id = select ? parseInt(select.value) : 0;
+            const score = parseInt(document.getElementById('calc-score-val').innerText);
+            const p = proposals.find(item => item.id === id);
+            if (p) {
+                p.feasibilityScore = score;
+                saveData();
+                refreshAllAdminViews();
+                showToast("تم حفظ درجة الجدوى للمقترح!");
+            }
+        }
+
+        function renderWorkflowView() {
+            const container = document.getElementById('workflow-cards-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            proposals.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "bg-beige-50/80 p-5 rounded-2xl border border-beige-300 space-y-3";
+                const sortedStages = (p.stages || []).sort((a,b) => a.order - b.order);
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 border-b border-beige-200 pb-2">
+                        <div>
+                            <span class="text-[10px] font-bold text-olive-800 bg-beige-200 px-2.5 py-0.5 rounded-full">${p.directorate}</span>
+                            <h4 class="font-extrabold text-olive-800 text-sm mt-1">${p.title}</h4>
+                            <p class="text-[11px] text-slate-600">المقدم: ${p.empName}</p>
+                        </div>
+                        <span class="bg-olive-800 text-beige-100 font-bold text-xs px-3 py-1 rounded-full">${p.status}</span>
+                    </div>
+                    <div class="space-y-2 pt-1">
+                        <h5 class="text-xs font-bold text-olive-800">مراحل التنفيذ المرتبة:</h5>
+                        ${sortedStages.length > 0 ? 
+                            `<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                ${sortedStages.map(st => `
+                                    <div class="p-2.5 bg-white rounded-xl border border-beige-300 text-xs space-y-1">
+                                        <div class="font-black text-olive-800">مرحلة ${st.order}: ${st.title}</div>
+                                        <div class="text-[10px] text-slate-500">الجهة: ${st.dept}</div>
+                                    </div>
+                                `).join('')}
+                            </div>` : `<p class="text-[11px] text-slate-400">لم يتم إدراج مراحل بعد.</p>`
+                        }
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openAddStageModal() {
+            const select = document.getElementById('stage-prop-id');
+            select.innerHTML = '';
+            proposals.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = p.title;
+                select.appendChild(opt);
+            });
+            toggleModal('addStageModal', true);
+        }
+
+        function handleStageSubmit(e) {
+            e.preventDefault();
+            const propId = parseInt(document.getElementById('stage-prop-id').value);
+            const order = parseInt(document.getElementById('stage-order').value) || 1;
+            const title = document.getElementById('stage-title').value;
+            const dept = document.getElementById('stage-dept').value;
+
+            const p = proposals.find(item => item.id === propId);
+            if (p) {
+                if (!p.stages) p.stages = [];
+                p.stages.push({ order, title, dept });
+                saveData();
+                renderWorkflowView();
+                toggleModal('addStageModal', false);
+                showToast("تم إضافة مرحلة التنفيذ بنجاح!");
+            }
+        }
+
+        function renderBeforeAfterView() {
+            const grid = document.getElementById('before-after-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            proposals.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "bg-beige-50/80 p-5 rounded-2xl border border-beige-300 space-y-3";
+                card.innerHTML = `
+                    <div class="border-b border-beige-200 pb-2 flex justify-between items-center">
+                        <h4 class="font-bold text-olive-800 text-xs">${p.title}</h4>
+                        <span class="text-[10px] font-bold text-olive-700 bg-beige-200 px-2 py-0.5 rounded-full">${p.directorate}</span>
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <div class="bg-white p-3 rounded-xl border border-beige-300">
+                            <strong class="text-rose-800 block mb-0.5"><i class="fa-solid fa-clock-rotate-left"></i> قبل التحسين:</strong>
+                            <p class="text-slate-700 font-medium">${p.currentState}</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-beige-300 space-y-2">
+                            <div class="flex justify-between items-center border-b border-beige-200 pb-1">
+                                <strong class="text-emerald-800"><i class="fa-solid fa-circle-check"></i> بعد التحسين:</strong>
+                                <button onclick="saveAfterText(${p.id})" class="text-[10px] bg-olive-700 text-beige-100 px-2 py-0.5 rounded font-bold">حفظ</button>
+                            </div>
+                            <textarea id="after-txt-${p.id}" rows="2" class="w-full p-2 bg-beige-50 border border-beige-300 rounded-lg text-xs font-medium">${p.afterMetricsText || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function saveAfterText(id) {
+            const txt = document.getElementById(`after-txt-${id}`)?.value;
+            const p = proposals.find(item => item.id === id);
+            if (p && txt) {
+                p.afterMetricsText = txt;
+                saveData();
+                showToast("تم التحديث بنجاح!");
+            }
+        }
+
+        // Delivery View with Delta Numerical Matrices, Custom KPIs, and Reasons
+        function renderDeliveryView() {
+            const container = document.getElementById('delivery-cards-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            proposals.forEach(p => {
+                const customMetricsList = p.customMetrics || [];
+                const card = document.createElement('div');
+                card.className = "bg-beige-50/80 p-5 rounded-2xl border border-beige-300 space-y-4";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 border-b border-beige-200 pb-2">
+                        <div>
+                            <span class="text-[10px] font-bold text-olive-800 bg-beige-200 px-2.5 py-0.5 rounded-full">${p.directorate}</span>
+                            <h4 class="font-extrabold text-olive-800 text-sm mt-1">${p.title}</h4>
+                            <p class="text-[11px] text-slate-500">الموظف المقدم: ${p.empName}</p>
+                        </div>
+                        <span class="bg-olive-800 text-beige-100 font-bold text-xs px-2.5 py-0.5 rounded-full">${p.status}</span>
+                    </div>
+
+                    <!-- Delta Numerical Comparison Matrices -->
+                    <div class="bg-white p-3 rounded-xl border border-beige-300 space-y-2 text-xs">
+                        <strong class="text-olive-900 block border-b pb-1"><i class="fa-solid fa-chart-line"></i> مصفوفات القياس الرقمية مقارنة بالدراسة الفعلية:</strong>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                            <div class="p-2 bg-beige-50 rounded-lg">
+                                <span class="text-[10px] text-slate-500 block">الزمن الفعلي (أيام)</span>
+                                <input type="number" id="delta-days-${p.id}" value="${p.deltaDays || p.expectedTimeDays}" class="w-full text-center font-bold text-olive-800 bg-white border rounded text-xs p-1">
+                            </div>
+                            <div class="p-2 bg-beige-50 rounded-lg">
+                                <span class="text-[10px] text-slate-500 block">التكلفة الفعلية (ل.س)</span>
+                                <input type="number" id="delta-cost-${p.id}" value="${p.deltaCost || p.expectedCost}" class="w-full text-center font-bold text-olive-800 bg-white border rounded text-xs p-1">
+                            </div>
+                            <div class="p-2 bg-beige-50 rounded-lg">
+                                <span class="text-[10px] text-slate-500 block">رضا المواطن (%)</span>
+                                <input type="number" id="cit-sat-${p.id}" value="${p.citizenSatisfaction || 90}" min="0" max="100" class="w-full text-center font-bold text-olive-800 bg-white border rounded text-xs p-1">
+                            </div>
+                            <div class="p-2 bg-beige-50 rounded-lg">
+                                <span class="text-[10px] text-slate-500 block">رضا الموظف (%)</span>
+                                <input type="number" id="emp-sat-${p.id}" value="${p.employeeSatisfaction || 90}" min="0" max="100" class="w-full text-center font-bold text-olive-800 bg-white border rounded text-xs p-1">
+                            </div>
+                        </div>
+
+                        <!-- Custom KPIs / Metrics Section -->
+                        <div class="pt-2 border-t border-beige-200 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-olive-800 text-[11px]">مؤشرات القياس الإضافية المخصصة (KPIs):</span>
+                                <button onclick="openAddMetricModal(${p.id})" class="bg-beige-500 hover:bg-beige-600 text-olive-800 text-[10px] font-bold px-2 py-1 rounded-lg transition shadow">
+                                    <i class="fa-solid fa-plus"></i> إضافة مؤشر جديد
+                                </button>
+                            </div>
+                            <div id="custom-metrics-list-${p.id}" class="flex flex-wrap gap-2">
+                                ${customMetricsList.length > 0 ? customMetricsList.map((m, mIdx) => `
+                                    <span class="bg-beige-100 border border-beige-300 text-olive-900 text-[10px] px-2.5 py-1 rounded-lg font-bold flex items-center gap-2">
+                                        ${m.label}: <strong>${m.value}</strong>
+                                        <button onclick="removeCustomMetric(${p.id}, ${mIdx})" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-xmark"></i></button>
+                                    </span>
+                                `).join('') : '<span class="text-[10px] text-slate-400">لا توجد مؤشرات مخصصة مضافة.</span>'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reasons and Administrative Notes Input -->
+                    <div class="space-y-1 text-xs">
+                        <label class="font-bold text-olive-800 block">التقرير الفني ومبررات القرار الإداري (سبب الاعتماد أو الرفض):</label>
+                        <textarea id="admin-reason-${p.id}" rows="2" placeholder="اكتب أسباب الاعتماد أو الرفض بالتفصيل..." class="w-full p-2 bg-white border border-beige-300 rounded-xl font-medium">${p.adminReason || ''}</textarea>
+                    </div>
+
+                    <div class="pt-2 border-t border-beige-200 flex justify-between items-center text-xs">
+                        <button onclick="saveDeliveryMetrics(${p.id})" class="bg-olive-700 text-beige-100 font-bold px-4 py-2 rounded-xl transition shadow">
+                            <i class="fa-solid fa-floppy-disk"></i> حفظ القياسات والأسباب
+                        </button>
+                        ${p.status === 'مكتمل ومسلم' && p.committee && p.committee.length > 0 ?
+                            `<button onclick="goToCertForProp(${p.id})" class="bg-beige-500 hover:bg-beige-600 text-olive-800 font-extrabold px-4 py-2 rounded-xl transition shadow">
+                                <i class="fa-solid fa-certificate"></i> الانتقال للشهادة
+                            </button>` :
+                            `<span class="text-amber-700 font-bold">تتطلب حالة مكتمل ومسلم + لجنة</span>`
+                        }
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openAddMetricModal(propId) {
+            document.getElementById('metric-prop-id').value = propId;
+            document.getElementById('metric-label').value = '';
+            document.getElementById('metric-value').value = '';
+            toggleModal('addMetricModal', true);
+        }
+
+        function handleCustomMetricSubmit(e) {
+            e.preventDefault();
+            const propId = parseInt(document.getElementById('metric-prop-id').value);
+            const label = document.getElementById('metric-label').value.trim();
+            const value = document.getElementById('metric-value').value.trim();
+
+            const p = proposals.find(item => item.id === propId);
+            if (p) {
+                if (!p.customMetrics) p.customMetrics = [];
+                p.customMetrics.push({ label, value });
+                saveData();
+                renderDeliveryView();
+                toggleModal('addMetricModal', false);
+                showToast("تم إضافة مؤشر القياس الجديد بنجاح!");
+            }
+        }
+
+        function removeCustomMetric(propId, metricIdx) {
+            const p = proposals.find(item => item.id === propId);
+            if (p && p.customMetrics) {
+                p.customMetrics.splice(metricIdx, 1);
+                saveData();
+                renderDeliveryView();
+                showToast("تم حذف المؤشر بنجاح");
+            }
+        }
+
+        function saveDeliveryMetrics(id) {
+            const p = proposals.find(item => item.id === id);
+            if (p) {
+                p.deltaDays = parseInt(document.getElementById(`delta-days-${id}`).value) || 0;
+                p.deltaCost = parseInt(document.getElementById(`delta-cost-${id}`).value) || 0;
+                p.citizenSatisfaction = parseInt(document.getElementById(`cit-sat-${id}`).value) || 0;
+                p.employeeSatisfaction = parseInt(document.getElementById(`emp-sat-${id}`).value) || 0;
+                p.adminReason = document.getElementById(`admin-reason-${id}`).value;
+                saveData();
+                showToast("تم حفظ مصفوفات الاعتماد الرقمية ومبررات القرار بنجاح!");
+            }
+        }
+
+        function goToCertForProp(id) {
+            switchAdminTab('certificate');
+            const select = document.getElementById('cert-proposal-select');
+            if (select) {
+                select.value = id;
+                renderCertificateView();
+            }
+        }
+
+        function populateCertificateSelect() {
+            const select = document.getElementById('cert-proposal-select');
+            if (!select) return;
+            select.innerHTML = '';
+            const eligible = proposals.filter(p => p.status === 'مكتمل ومسلم' && p.committee && p.committee.length > 0);
+            if (eligible.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = 0;
+                opt.innerText = "لا توجد مقترحات مؤهلة للشهادة";
+                select.appendChild(opt);
+                return;
+            }
+            eligible.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.title} (${p.empName})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderCertificateView() {
+            const select = document.getElementById('cert-proposal-select');
+            const id = select ? parseInt(select.value) : 0;
+            const p = proposals.find(item => item.id === id);
+            if (p && p.status === 'مكتمل ومسلم' && p.committee && p.committee.length > 0) {
+                document.getElementById('cert-recipient-name').innerText = p.empName;
+                document.getElementById('cert-recipient-role').innerText = `${p.empRole} - ${p.directorate}`;
+                document.getElementById('cert-proposal-title').innerText = `"${p.title}"`;
+            } else {
+                document.getElementById('cert-recipient-name').innerText = "--- (غير مؤهل)";
+                document.getElementById('cert-recipient-role').innerText = "يشترط حالة مكتمل ومسلم وتعيين اللجنة";
+                document.getElementById('cert-proposal-title').innerText = "---";
+            }
+        }
+
+        function openAssignCommitteeModal(id) {
+            const p = proposals.find(item => item.id === id);
+            if (!p) return;
+            const content = document.getElementById('assignModalContent');
+            content.innerHTML = `
+                <div class="text-xs space-y-3">
+                    <p class="font-bold text-olive-800">حدد أعضاء اللجنة المشرفة على مقترح: <br><span class="underline">${p.title}</span></p>
+                    <div class="space-y-1.5 max-h-48 overflow-y-auto">
+                        ${committee.map(mem => `
+                            <label class="flex items-center gap-2 p-2 bg-beige-50 rounded-xl border border-beige-300 font-bold">
+                                <input type="checkbox" value="${mem.name}" ${p.committee && p.committee.includes(mem.name) ? 'checked' : ''} class="assign-mem-chk accent-olive-700">
+                                <span>${mem.name} (${mem.role})</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <button onclick="saveAssignedCommittee(${p.id})" class="w-full py-2 bg-olive-700 text-beige-100 font-bold rounded-xl shadow">حفظ اللجنة المشرفة</button>
+                </div>
+            `;
+            toggleModal('assignCommitteeModal', true);
+        }
+
+        function saveAssignedCommittee(id) {
+            const checkboxes = document.querySelectorAll('.assign-mem-chk:checked');
+            const selected = Array.from(checkboxes).map(cb => cb.value);
+            const p = proposals.find(item => item.id === id);
+            if (p) {
+                p.committee = selected;
+                saveData();
+                refreshAllAdminViews();
+                toggleModal('assignCommitteeModal', false);
+                showToast("تم تحديث اللجنة المشرفة بنجاح!");
+            }
+        }
+
+        function openEmpProfileModal(id) {
+            const p = proposals.find(item => item.id === id);
+            if (!p) return;
+            const content = document.getElementById('empProfileModalContent');
+            content.innerHTML = `
+                <div class="space-y-2 font-medium">
+                    <p><strong>اسم الموظف:</strong> ${p.empName}</p>
+                    <p><strong>الشاغر الوظيفي:</strong> ${p.empRole}</p>
+                    <p><strong>رقم الجوال:</strong> ${p.empPhone}</p>
+                    <p><strong>البريد الإلكتروني:</strong> ${p.empEmail}</p>
+                    <p><strong>المديرية / القطاع:</strong> ${p.directorate}</p>
+                </div>
+            `;
+            toggleModal('empProfileModal', true);
+        }
+
+        function renderCommitteeView() {
+            const grid = document.getElementById('committee-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            committee.forEach(mem => {
+                const card = document.createElement('div');
+                card.className = "bg-beige-50 p-3.5 rounded-2xl border border-beige-300 flex justify-between items-center text-xs";
+                card.innerHTML = `
+                    <div>
+                        <h5 class="font-bold text-olive-800">${mem.name}</h5>
+                        <p class="text-[11px] text-slate-500">${mem.role}</p>
+                    </div>
+                    <button onclick="deleteMember(${mem.id})" class="text-rose-600 hover:text-rose-800 font-bold"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddMemberModal() { toggleModal('addMemberModal', true); }
+
+        function handleMemberSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('mem-name').value;
+            const role = document.getElementById('mem-role').value;
+            committee.push({ id: Date.now(), name, role });
+            saveData();
+            renderCommitteeView();
+            toggleModal('addMemberModal', false);
+            showToast("تم إضافة عضو اللجنة بنجاح");
+        }
+
+        function deleteMember(id) {
+            if (confirm("هل تريد إزالة هذا العضو؟")) {
+                committee = committee.filter(m => m.id !== id);
+                saveData();
+                renderCommitteeView();
+                showToast("تم الحذف بنجاح");
+            }
+        }
+
+        function handlePinChange(e) {
+            e.preventDefault();
+            const oldP = document.getElementById('pin-old').value;
+            const newP = document.getElementById('pin-new').value;
+
+            if (oldP !== currentPin) {
+                showToast("رمز الدخول الحالي غير صحيح!", false);
+                return;
+            }
+
+            const hasLetter = /[a-zA-Z]/.test(newP);
+            const hasNum = /[0-9]/.test(newP);
+            const hasSym = /[!@#$%^&*(),.?":{}|<>]/.test(newP);
+
+            if (newP.length < 10 || !hasLetter || !hasNum || !hasSym) {
+                showToast("يجب أن يكون الرمز الجديد من 10 رموز على الأقل ويحتوي أحرف وأرقام ورموز خاصة!", false);
+                return;
+            }
+
+            currentPin = newP;
+            saveData();
+            showToast("تم تغيير رمز الدخول بنجاح!");
+            document.getElementById('pin-old').value = '';
+            document.getElementById('pin-new').value = '';
+        }
+
+        function toggleModal(id, show) {
+            const modal = document.getElementById(id);
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function exportToCSV() {
+            let csv = "\uFEFF";
+            csv += "عنوان المقترح,اسم الموظف,الشاغر,الجوال,البريد,المديرية,التكلفة,المدة (أيام),الجدوى,الحالة\n";
+            proposals.forEach(p => {
+                csv += `"${p.title}","${p.empName}","${p.empRole}","${p.empPhone}","${p.empEmail}","${p.directorate}",${p.expectedCost},${p.expectedTimeDays},"${p.feasibilityScore}%","${p.status}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "مبادرات_درعا_التنمية_الإدارية.csv";
+            a.click();
+            showToast("تم تصدير ملف CSV بنجاح");
+        }
+
+        function renderCharts() {
+            document.getElementById('stat-total').innerText = proposals.length;
+            document.getElementById('stat-pending').innerText = proposals.filter(p => p.status === 'قيد الدراسة' || p.status === 'قيد التنفيذ' || p.status === 'معتمد').length;
+            document.getElementById('stat-completed').innerText = proposals.filter(p => p.status === 'مكتمل ومسلم').length;
+            document.getElementById('stat-rejected').innerText = proposals.filter(p => p.status === 'مرفوض').length;
+
+            const dirMap = {};
+            proposals.forEach(p => { dirMap[p.directorate] = (dirMap[p.directorate] || 0) + 1; });
+
+            const ctx1 = document.getElementById('directorateChart')?.getContext('2d');
+            if (ctx1) {
+                if (chartInst1) chartInst1.destroy();
+                chartInst1 = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(dirMap).length > 0 ? Object.keys(dirMap) : ['لا توجد بيانات'],
+                        datasets: [{ label: 'عدد المقترحات', data: Object.values(dirMap), backgroundColor: '#2a3a2d', borderRadius: 8 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            }
+
+            const ctx2 = document.getElementById('timeAnalyticsChart')?.getContext('2d');
+            if (ctx2) {
+                if (chartInst2) chartInst2.destroy();
+                chartInst2 = new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: proposals.length > 0 ? proposals.map(p => p.title.substring(0, 10) + '...') : ['لا يوجد'],
+                        datasets: [{ label: 'الوقت (أيام)', data: proposals.map(p => p.expectedTimeDays), borderColor: '#b8955d', backgroundColor: '#b8955d', tension: 0.3 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        }
+
+        function refreshAllAdminViews() {
+            renderCharts();
+            renderProposalsTable();
+        }
+
+        window.onload = function() {
+            saveData();
+            showLandingScreen();
+        };
+    </script>
+</body>
+</html>
